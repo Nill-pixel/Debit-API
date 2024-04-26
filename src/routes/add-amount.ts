@@ -3,8 +3,8 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import Stripe from "stripe";
 import z from "zod";
 import { prisma } from "../lib/prisma";
+import { stripClient } from "../util/stripe-validation";
 
-const stripClient = new Stripe(process.env.STRIP_SECRET as string)
 export const addAmount = async (app: FastifyInstance) => {
   app
     .withTypeProvider<ZodTypeProvider>()
@@ -21,7 +21,7 @@ export const addAmount = async (app: FastifyInstance) => {
         }),
         response: {
           201: z.object({
-            amount: z.number().positive()
+            message: z.string()
           })
 
         }
@@ -29,6 +29,15 @@ export const addAmount = async (app: FastifyInstance) => {
     }, async (request, reply) => {
       const { number, cvv, month, year, amount } = request.body
 
+      try {
+        const stripe = await stripClient.paymentIntents.create({
+          amount: amount,
+          currency: 'usd',
+          payment_method_types: ['card']
+        })
+      } catch (err) {
+        reply.code(500).send({ message: 'Failed to process payment' })
+      }
 
       const creditCard = await prisma.creditCard.findUnique({
         where: {
@@ -59,14 +68,14 @@ export const addAmount = async (app: FastifyInstance) => {
           number
         },
         data: {
-          amount: {
+          balance: {
             increment: amount
           }
         }
       })
 
       reply.status(201).send({
-        amount: recharge.amount
+        message: `Your deposit has been successfully credited to your account. $${recharge.balance}`
       })
 
     })

@@ -18,7 +18,7 @@ model CreditCard {
   expirationDate DateTime
   month          Int
   year           Int
-  amount         Float
+  balance        Float
   Transation     Transation[]
 
   @@map("credit_cards")

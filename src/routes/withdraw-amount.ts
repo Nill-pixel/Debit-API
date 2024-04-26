@@ -2,8 +2,9 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { prisma } from "../lib/prisma";
+import { stripClient } from "../util/stripe-validation";
 
-export const widrawAmount = async (app: FastifyInstance) => {
+export const withdrawAmount = async (app: FastifyInstance) => {
   app
     .withTypeProvider<ZodTypeProvider>()
     .post('/widraw', {
@@ -18,7 +19,7 @@ export const widrawAmount = async (app: FastifyInstance) => {
           amount: z.number().positive(),
         }), response: {
           200: z.object({
-            amount: z.number().positive()
+            message: z.string()
           })
         }
       }
@@ -33,7 +34,7 @@ export const widrawAmount = async (app: FastifyInstance) => {
           cvv: true,
           month: true,
           year: true,
-          amount: true
+          balance: true
         }
       })
 
@@ -50,23 +51,33 @@ export const widrawAmount = async (app: FastifyInstance) => {
         throw new Error('Invalid Year Credit Card')
       }
 
-      if (creditCard.amount < amount) {
+      if (creditCard.balance < amount) {
         throw new Error('Not amount enough!')
       }
 
-      const widraw = await prisma.creditCard.update({
+      try {
+        const stripe = await stripClient.paymentIntents.create({
+          amount: amount,
+          currency: 'usd',
+          payment_method_types: ['card']
+        })
+      } catch (err) {
+        reply.code(500).send({ message: 'Failed to process payment' })
+      }
+
+      const withdraw = await prisma.creditCard.update({
         where: {
           number
         },
         data: {
-          amount: {
+          balance: {
             decrement: amount
           }
         }
       })
 
       reply.status(201).send({
-        amount: widraw.amount
+        message: `Your withdrawal of ${amount} has been processed. Your current balance is ${withdraw.balance}.`
       })
     })
 

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { generateVisaCreditCardNumber } from "../util/generate-number";
 import { generateExpirationDate } from "../util/generate-expiration-date";
+import { stripClient } from "../util/stripe-validation";
 
 export const createCard = async (app: FastifyInstance) => {
   app
@@ -19,7 +20,7 @@ export const createCard = async (app: FastifyInstance) => {
         }),
         response: {
           201: z.object({
-            cardId: z.string().uuid()
+            message: z.string().uuid()
           })
         }
       }
@@ -31,20 +32,22 @@ export const createCard = async (app: FastifyInstance) => {
         const month = expirationDate.getMonth()
         const year = expirationDate.getFullYear()
 
+        try {
+          const stripe = await stripClient.paymentIntents.create({
+            amount: amount,
+            currency: 'usd',
+            payment_method_types: ['card']
+          })
+        } catch (err) {
+          reply.code(500).send({ message: 'Failed to process payment' })
+        }
+
         const card = await prisma.creditCard.create({
-          data: {
-            name,
-            expirationDate,
-            number,
-            amount,
-            cvv,
-            month,
-            year
-          }
+          data: { name, expirationDate, number, balance: amount, cvv, month, year }
         })
 
         return reply.status(201).send({
-          cardId: card.cardId
+          message: `Your card has been successfully created. Your current balance is ${card.balance}.`
         })
       })
 }
