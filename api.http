@@ -1,0 +1,34 @@
+POST http://localhost:3333/create
+Content-Type: application/json
+
+{
+  "name": "Nilvany",
+  "cvv": 123,
+  "amount" : 100000
+}
+
+###
+
+POST http://localhost:3333/recharge
+Content-Type: application/json
+
+{
+  "number": "4691750430030826",
+  "cvv": 123,
+  "month": 3,
+  "year": 2029,
+  "amount" : 1130000
+}
+
+###
+
+POST http://localhost:3333/widraw
+Content-Type: application/json
+
+{
+  "number": "4691750430030826",
+  "cvv": 123,
+  "month": 3,
+  "year": 2029,
+  "amount" : 130000
+}

@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model CreditCard {
+  cardId         String       @id @default(uuid())
+  name           String
+  number         String?      @unique
+  cvv            Int
+  expirationDate DateTime
+  month          Int
+  year           Int
+  amount         Float
+  Transation     Transation[]
+
+  @@map("credit_cards")
+}
+
+model Transation {
+  id               String     @id @default(uuid())
+  value            Float
+  Status           String
+  date             DateTime
+  creditCard       CreditCard @relation(fields: [creditCardCardId], references: [cardId])
+  creditCardCardId String
+
+  @@map("transations")
+}

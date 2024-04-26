@@ -1,0 +1,28 @@
+{
+  "name": "debit-api",
+  "version": "1.0.0",
+  "description": "npm init -y\r npm i typescript @types/node -D \r npx tsc --init  \r npm i tsx -D \r npx tsx src/server.ts    \r npm i fastify\r npm i prisma -D  \r npx prisma init --datasource-provider SQLite  \r npx tsx watch src/server.ts  \r npm i zood  \r npm i zod    \r tsc --init  \r npm i dotenv   \r  npm install --save-dev @types/node @types/dotenv  \r  npm i fastify-type-provider-zod \r  npx prisma generate  \r  npx prisma migrate dev \r  npx prisma studio\r  npx prisma db seed \r  npm i @fastify/swagger  \r  npm i @fastify/swagger-UI \r  npm i @fastify/swagger-ui \r  npm i @fastify/cors    \r  npm tsup -D \r  npm i tsup -D",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^20.12.7",
+    "prisma": "^5.12.1",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.12.1",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.26.2",
+    "fastify-type-provider-zod": "^1.1.9",
+    "strip": "^3.0.0",
+    "stripe": "^15.3.0",
+    "zod": "^3.22.5"
+  }
+}
