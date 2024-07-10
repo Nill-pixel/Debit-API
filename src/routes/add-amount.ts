@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import Stripe from "stripe";
 import z from "zod";
 import { prisma } from "../lib/prisma";
 import { stripClient } from "../util/stripe-validation";
