@@ -3,6 +3,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import { prisma } from "../lib/prisma";
 import { stripClient } from "../util/stripe-validation";
+import { BadRequest } from "./_errors/bad-request";
 
 export const withdrawAmount = async (app: FastifyInstance) => {
   app
@@ -39,20 +40,20 @@ export const withdrawAmount = async (app: FastifyInstance) => {
       })
 
       if (!creditCard) {
-        throw new Error('Invalid number Credit Card')
+        throw new BadRequest('Invalid number Credit Card')
       }
       if (creditCard.cvv !== cvv) {
-        throw new Error('Invalid CVV Credit Card')
+        throw new BadRequest('Invalid CVV Credit Card')
       }
       if (creditCard.month !== month) {
-        throw new Error('Invalid Month Credit Card')
+        throw new BadRequest('Invalid Month Credit Card')
       }
       if (creditCard.year !== year) {
-        throw new Error('Invalid Year Credit Card')
+        throw new BadRequest('Invalid Year Credit Card')
       }
 
       if (creditCard.balance < amount) {
-        throw new Error('Not amount enough!')
+        throw new BadRequest('Not amount enough!')
       }
 
       try {

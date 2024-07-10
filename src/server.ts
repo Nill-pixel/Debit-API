@@ -7,6 +7,12 @@ import { withdrawAmount } from "./routes/withdraw-amount";
 
 const app = fastify()
 
+app.register(fastifyCors, {
+  origin: '*'
+})
+
+app.register(fastifyS)
+
 app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
 

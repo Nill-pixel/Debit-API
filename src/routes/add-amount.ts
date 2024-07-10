@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import z from "zod";
 import { prisma } from "../lib/prisma";
 import { stripClient } from "../util/stripe-validation";
+import { BadRequest } from "./_errors/bad-request";
 
 export const addAmount = async (app: FastifyInstance) => {
   app
@@ -51,16 +52,16 @@ export const addAmount = async (app: FastifyInstance) => {
       })
 
       if (!creditCard) {
-        throw new Error('Invalid number Credit Card')
+        throw new BadRequest('Invalid number Credit Card')
       }
       if (creditCard.cvv !== cvv) {
-        throw new Error('Invalid CVV Credit Card')
+        throw new BadRequest('Invalid CVV Credit Card')
       }
       if (creditCard.month !== month) {
-        throw new Error('Invalid Month Credit Card')
+        throw new BadRequest('Invalid Month Credit Card')
       }
       if (creditCard.year !== year) {
-        throw new Error('Invalid Year Credit Card')
+        throw new BadRequest('Invalid Year Credit Card')
       }
 
       const recharge = await prisma.creditCard.update({
